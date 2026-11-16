@@ -295,49 +295,32 @@ then
 fi
 
 AC_ARG_WITH(faad,
-  [[  --with-faad[=DIR]     support for MP4 (AAC) transcoding using libfaad [in DIR]]])
+  [[  --with-faad[=DIR]     support for MP4 audio decoding using FFmpeg]])
 
-if test "$have_LAME" != "yes"
+if test "$have_LAME" != "yes" -a "$with_faad" != "no"
 then
-  if test -n "$with_faad" -a "$with_faad" != "no"
-  then
-    AC_MSG_ERROR([MP4 transcoding cannot be enabled without LAME])
-  elif test "$with_faad" != "no"
-  then
-    AC_MSG_RESULT([MP4 transcoding is disabled because LAME is not enabled])
-    with_faad="no"
-  fi
+  AC_MSG_ERROR([MP4 decoding requires LAME])
 fi
 
 have_faad="no"
 if test "$with_faad" != "no"
 then
-  if test -n "$with_faad" -a "$with_faad" != "yes"
+  dnl MP4 audio is demuxed and decoded with FFmpeg. libmp4v2 is not in Ubuntu.
+  if pkg-config --exists libavformat libavcodec libswresample libavutil
   then
-    CPPFLAGS="$CPPFLAGS -I$with_faad/include"
-    LDFLAGS="$LDFLAGS -L$with_faad/lib"
-  fi
-
-  AC_CHECK_HEADER(faad.h, have_faad="maybe")
-  if test "$have_faad" != "no"
-  then
-    AC_CHECK_LIB(mp4v2, MP4Read, [
-      LIBS="$LIBS -lmp4v2 -lfaad"
-      AC_DEFINE(HAVE_LIBFAAD, 1, [Define if you have libfaad])
-      ICES_OBJECTS="$ICES_OBJECTS in_mp4.o"
-      have_faad="yes"
-    ],[have_faad="no"])
+    have_faad="yes"
+    CFLAGS="$CFLAGS `pkg-config --cflags libavformat libavcodec libswresample libavutil`"
+    LIBS="$LIBS `pkg-config --libs libavformat libavcodec libswresample libavutil`"
+    AC_DEFINE(HAVE_LIBFAAD, 1, [Define if MP4 decoding via FFmpeg is available])
+    ICES_OBJECTS="$ICES_OBJECTS in_mp4.o"
+  else
+    have_faad="no"
   fi
 fi
 
 if test "$with_faad" != "no" -a "$have_faad" != "yes"
 then
-  if test -n "$with_faad"
-  then
-    AC_MSG_ERROR([Could not find libfaad])
-  else
-    AC_MSG_RESULT([Could not find libfaad, MP4 transcoding disabled])
-  fi
+  AC_MSG_ERROR([FFmpeg libraries for MP4 decoding were not found (libavformat, libavcodec, libswresample, libavutil). Refusing to build ices0 without MP4 support.])
 fi
 
 AC_ARG_WITH(flac,

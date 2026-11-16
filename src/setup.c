@@ -489,7 +489,7 @@ static void ices_setup_activate_libshout_changes(const ices_config_t *ices_confi
 		shout_set_port(conn, stream->port);
 		shout_set_user(conn, stream->user);
 		shout_set_password(conn, stream->password);
-		shout_set_content_format(conn, "audio/mpeg", NULL, NULL);
+		shout_set_content_format(conn, SHOUT_FORMAT_MP3, SHOUT_USAGE_AUDIO, NULL);
 		if (stream->protocol == icy_protocol_e)
 			shout_set_protocol(conn, SHOUT_PROTOCOL_ICY);
 		else if (stream->protocol == http_protocol_e)
