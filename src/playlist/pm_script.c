@@ -143,8 +143,12 @@ static char *playlist_script_get_next(void) {
 	if (filename[0] == '\n' || (filename[0] == '\r' && filename[1] == '\n')) {
 		ices_log_error_output("Got newlines instead of filename from program \"%s\"", cmd);
 		free(filename); filename = NULL;
-		if (metadata) free(metadata); metadata = NULL;
-		if (timelimit) free(timelimit); timelimit = NULL;
+		if (metadata)
+			free(metadata);
+		metadata = NULL;
+		if (timelimit)
+			free(timelimit);
+		timelimit = NULL;
 		return NULL;
 	}
 	

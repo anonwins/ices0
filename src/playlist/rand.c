@@ -72,6 +72,7 @@ static void scramble(FILE *fp, FILE *out) {
 
 	llist = malloc(sizeof(struct ll));
 	llist->data = NULL;
+	llist->next = NULL;
 	ptr = llist;
 
 	line_storage = (char *) malloc(sizeof(char) * 1024 + 2);

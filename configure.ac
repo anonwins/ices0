@@ -9,6 +9,7 @@ m4_define(ICES_VERSION,
 
 AC_INIT([ices], ICES_VERSION, [icecast@xiph.org])
 AC_PREREQ(2.52)
+AC_CONFIG_MACRO_DIRS([m4])
 AC_CONFIG_SRCDIR([src/ices.c])
 
 AC_CONFIG_FILES([Makefile src/Makefile src/playlist/Makefile conf/Makefile
@@ -33,9 +34,7 @@ fi
 dnl -- System check --
 
 AC_CANONICAL_HOST
-AC_AIX
-AC_ISC_POSIX
-AC_MINIX
+AC_USE_SYSTEM_EXTENSIONS
 
 case $host in
   *hpux*)
@@ -58,11 +57,9 @@ dnl -- System header check --
 AC_HEADER_SYS_WAIT
 AC_CHECK_HEADERS([errno.h fcntl.h signal.h sys/signal.h sys/socket.h \
   sys/stat.h sys/time.h sys/types.h unistd.h])
-AC_HEADER_TIME
 
 AC_TYPE_PID_T
 AC_TYPE_SIZE_T
-AC_TYPE_SIGNAL
 
 dnl -- System function check --
 
@@ -73,8 +70,8 @@ dnl -- Build system init --
 
 AM_INIT_AUTOMAKE([1.6 foreign])
 AM_MAINTAINER_MODE
-AM_CONFIG_HEADER(config.h)
-AC_PROG_LIBTOOL
+AC_CONFIG_HEADERS([config.h])
+LT_INIT
 AC_SUBST(LIBTOOL_DEPS)
 
 AC_ARG_WITH(docdir,
@@ -230,13 +227,13 @@ then
   if test "$have_LAME" != "no"
   then
     AC_CHECK_LIB(mp3lame, lame_encode_flush_nogap, [
-      have_LAME="yes"
-      LIBS="$LIBS -lmp3lame"
-      LIBM="-lm"
-      ICES_OBJECTS="$ICES_OBJECTS reencode.o"
-      AC_DEFINE(HAVE_LIBLAME, 1, [Define if you have the LAME MP3 library])
-
-      AC_CHECK_FUNCS([lame_decode_exit])
+      AC_CHECK_LIB(mp3lame, hip_decode_init, [
+        have_LAME="yes"
+        LIBS="$LIBS -lmp3lame"
+        LIBM="-lm"
+        ICES_OBJECTS="$ICES_OBJECTS reencode.o"
+        AC_DEFINE(HAVE_LIBLAME, 1, [Define if you have the LAME MP3 library])
+      ], [have_LAME="no"], -lm)
       ], [have_LAME="no"], -lm)
   fi
 fi

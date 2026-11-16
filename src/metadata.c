@@ -122,7 +122,7 @@ static void metadata_update(int delay) {
 	}
 
 	for (stream = ices_config.streams; stream; stream = stream->next) {
-		rc = shout_set_metadata(stream->conn, metadata);
+		rc = shout_set_metadata_utf8(stream->conn, metadata);
 
 		if (rc != SHOUTERR_SUCCESS)
 			ices_log_error_output("Updating metadata on %s failed.", stream->mount);
@@ -136,23 +136,24 @@ static void metadata_update(int delay) {
 
 /* Cleanup a filename so it looks more like a song name */
 static char *metadata_clean_filename(const char* path, char *buf, size_t len) {
-	char *ptr = NULL;
+	const char *slash;
+	char *dot;
 
-	if (!path || !buf) {
+	if (!path || !buf || len < 1) {
 		ices_log("ERROR: Polluted strings sent to filename cleanup.");
 		return NULL;
 	}
 
 	/* Find last slash */
-	ptr = strrchr(path, '/');
+	slash = strrchr(path, '/');
 
-	if (ptr && strlen(ptr) > 0)
-		strncpy(buf, ptr + 1, len);
+	if (slash && slash[0] != '\0')
+		snprintf(buf, len, "%s", slash + 1);
 	else
-		strncpy(buf, path, len);
+		snprintf(buf, len, "%s", path);
 
-	if ((ptr = strrchr(buf, '.')))
-		*ptr = '\0';
+	if ((dot = strrchr(buf, '.')))
+		*dot = '\0';
 
 	ices_log_debug("Filename cleaned up from [%s] to [%s]", path, buf);
 	return buf;

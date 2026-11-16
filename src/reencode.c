@@ -29,6 +29,9 @@
 
 extern ices_config_t ices_config;
 
+/* One decoder for the process. LAME's hip handle replaces the old global lame_decode state. */
+static hip_t decode_hip;
+
 /* Global function definitions */
 
 /* Initialize the reencoding engine in ices, initialize
@@ -54,24 +57,19 @@ void ices_reencode_initialize(void) {
 void ices_reencode_reset(input_stream_t* source) {
 	ices_stream_t* stream;
 	lame_global_flags* lame;
-	static int init_decoder = 1;
 
-#ifdef HAVE_LAME_DECODE_EXIT
-	if (!init_decoder) {
-		if (lame_decode_exit() < 0) {
+	if (decode_hip) {
+		if (hip_decode_exit(decode_hip) < 0) {
 			ices_log("LAME: error shutting down decoder");
 			ices_setup_shutdown();
 		}
-		init_decoder = 1;
+		decode_hip = NULL;
 	}
-#endif
 
-	if (init_decoder) {
-		if (lame_decode_init() < 0) {
-			ices_log("LAME: error initialising decoder");
-			ices_setup_shutdown();
-		}
-		init_decoder = 0;
+	decode_hip = hip_decode_init();
+	if (!decode_hip) {
+		ices_log("LAME: error initialising decoder");
+		ices_setup_shutdown();
 	}
 
 	for (stream = ices_config.streams; stream; stream = stream->next) {
@@ -124,6 +122,11 @@ void ices_reencode_reset(input_stream_t* source) {
 void ices_reencode_shutdown(void) {
 	ices_stream_t* stream;
 
+	if (decode_hip) {
+		hip_decode_exit(decode_hip);
+		decode_hip = NULL;
+	}
+
 	for (stream = ices_config.streams; stream; stream = stream->next)
 		if (stream->encoder_state) {
 			lame_close((lame_global_flags*) stream->encoder_state);
@@ -136,7 +139,7 @@ void ices_reencode_shutdown(void) {
  * for ices_reencode_reencode_chunk. */
 int ices_reencode_decode(unsigned char* buf, size_t blen, size_t olen,
 			 int16_t* left, int16_t* right) {
-	return lame_decode(buf, blen, left, right);
+	return hip_decode(decode_hip, buf, blen, left, right);
 }
 
 /* reencode buff, of len buflen, put max outlen reencoded bytes in outbuf */

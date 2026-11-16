@@ -265,7 +265,8 @@ char *ices_util_file_time(unsigned int bitrate, unsigned int filesize, char *buf
 
 /* Threadsafe version of strerror */
 const char *ices_util_strerror(int error, char *namespace, int maxsize) {
-	strncpy(namespace, strerror(error), maxsize);
+	if (maxsize > 0)
+		snprintf(namespace, (size_t)maxsize, "%s", strerror(error));
 	return namespace;
 }
 

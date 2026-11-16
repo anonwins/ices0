@@ -51,9 +51,10 @@ void ices_log_daemonize(void) {
 	close(1);
 	close(2);
 
-	freopen("/dev/null", "r", stdin);
-	freopen("/dev/null", "w", stdout);
-	freopen("/dev/null", "w", stderr);
+	if (!freopen("/dev/null", "r", stdin)
+	    || !freopen("/dev/null", "w", stdout)
+	    || !freopen("/dev/null", "w", stderr))
+		exit(1);
 
 	ices_log_reopen_logfile();
 }
@@ -158,7 +159,7 @@ static int ices_log_open_logfile(void) {
 	FILE *logfp;
 
 	if (!ices_config.base_directory ||
-	    strlen(ices_config.base_directory) > 1016) {
+	    strlen(ices_config.base_directory) > sizeof(namespace) - strlen("/ices.log") - 1) {
 		ices_log_error("Base directory is invalid");
 		return 0;
 	}

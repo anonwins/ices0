@@ -489,19 +489,17 @@ static void ices_setup_activate_libshout_changes(const ices_config_t *ices_confi
 		shout_set_port(conn, stream->port);
 		shout_set_user(conn, stream->user);
 		shout_set_password(conn, stream->password);
-		shout_set_format(conn, SHOUT_FORMAT_MP3);
+		shout_set_content_format(conn, "audio/mpeg", NULL, NULL);
 		if (stream->protocol == icy_protocol_e)
 			shout_set_protocol(conn, SHOUT_PROTOCOL_ICY);
 		else if (stream->protocol == http_protocol_e)
 			shout_set_protocol(conn, SHOUT_PROTOCOL_HTTP);
 		else
 			shout_set_protocol(conn, SHOUT_PROTOCOL_XAUDIOCAST);
-		if (stream->dumpfile)
-			shout_set_dumpfile(conn, stream->dumpfile);
-		shout_set_name(conn, stream->name);
-		shout_set_url(conn, stream->url);
-		shout_set_genre(conn, stream->genre);
-		shout_set_description(conn, stream->description);
+		shout_set_meta(conn, SHOUT_META_NAME, stream->name);
+		shout_set_meta(conn, SHOUT_META_URL, stream->url);
+		shout_set_meta(conn, SHOUT_META_GENRE, stream->genre);
+		shout_set_meta(conn, SHOUT_META_DESCRIPTION, stream->description);
 
 		snprintf(bitrate, sizeof(bitrate), "%d", stream->bitrate);
 		shout_set_audio_info(conn, SHOUT_AI_BITRATE, bitrate);
@@ -517,12 +515,16 @@ static void ices_setup_activate_libshout_changes(const ices_config_t *ices_confi
 			       stream->protocol == icy_protocol_e ? "icy" :
 			       stream->protocol == http_protocol_e ? "http" : "xaudiocast");
 		ices_log_debug("Mount: %s, User: %s, Password: %s", shout_get_mount(conn), shout_get_user(conn), shout_get_password(conn));
-		ices_log_debug("Name: %s\tURL: %s", shout_get_name(conn), shout_get_url(conn));
-		ices_log_debug("Genre: %s\tDesc: %s", shout_get_genre(conn),
-			       shout_get_description(conn));
+		ices_log_debug("Name: %s\tURL: %s",
+			       shout_get_meta(conn, SHOUT_META_NAME),
+			       shout_get_meta(conn, SHOUT_META_URL));
+		ices_log_debug("Genre: %s\tDesc: %s",
+			       shout_get_meta(conn, SHOUT_META_GENRE),
+			       shout_get_meta(conn, SHOUT_META_DESCRIPTION));
 		ices_log_debug("Bitrate: %s\tPublic: %d", shout_get_audio_info(conn, SHOUT_AI_BITRATE),
 			       shout_get_public(conn));
-		ices_log_debug("Dump file: %s", ices_util_nullcheck(shout_get_dumpfile(conn)));
+		/* Current libshout applies a dump file only for obsolete xaudiocast */
+		ices_log_debug("Dump file: %s", ices_util_nullcheck(stream->dumpfile));
 		streamno++;
 	}
 }
