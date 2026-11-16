@@ -1,5 +1,5 @@
 /* pm_script.h
- * - playlist module for external scripts (á la IceS 2.0)
+ * - playlist module for external scripts (ï¿½ la IceS 2.0)
  * Copyright (C) 2005 Ville Koskinen <ville.koskinen@iki.fi>
  *
  * This program is free software; you can redistribute it and/or

@@ -1,5 +1,5 @@
 /* pm_script.c
- * - playlist module for external scripts (á la IceS 2.0)
+ * - playlist module for external scripts (ï¿½ la IceS 2.0)
  * - based on playlist_script.c from IceS 2.0 by
  * Copyright (c) 2001 Michael Smith <msmith@labyrinth.net.au>
  *

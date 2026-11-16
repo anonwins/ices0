@@ -1,6 +1,6 @@
 /* signal.h
  * - Signal handling function declarations for ices
- * Copyright (c) 2000 Alexander Haväng
+ * Copyright (c) 2000 Alexander Havï¿½ng
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License

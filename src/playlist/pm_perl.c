@@ -1,6 +1,6 @@
 /* playlist_perl.c
  * - Interpreter functions for perl
- * Copyright (c) 2000 Chad Armstrong, Alexander Haväng
+ * Copyright (c) 2000 Chad Armstrong, Alexander Havï¿½ng
  * Copyright (c) 2001-2 Brendan Cully
  *
  * This program is free software; you can redistribute it and/or

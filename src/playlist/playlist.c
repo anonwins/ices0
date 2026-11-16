@@ -1,6 +1,6 @@
 /* playlist.c
  * - Functions for playlist handling
- * Copyright (c) 2000 Alexander Haväng
+ * Copyright (c) 2000 Alexander Havï¿½ng
  * Copyright (c) 2001-2 Brendan Cully
  *
  * This program is free software; you can redistribute it and/or
