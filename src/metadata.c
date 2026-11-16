@@ -122,7 +122,9 @@ static void metadata_update(int delay) {
 	}
 
 	for (stream = ices_config.streams; stream; stream = stream->next) {
-		rc = shout_set_metadata_utf8(stream->conn, metadata);
+		/* libshout's utf8 update posts to /admin/!POKE, which Icecast 2.5 rejects
+		 * and then retries without returning. /admin/metadata still succeeds. */
+		rc = shout_set_metadata(stream->conn, metadata);
 
 		if (rc != SHOUTERR_SUCCESS)
 			ices_log_error_output("Updating metadata on %s failed.", stream->mount);
