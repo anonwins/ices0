@@ -57,7 +57,7 @@ typedef struct {
 /* -- static prototypes -- */
 static void ices_mp4_read_metadata(AVFormatContext *fmt, int stream_index);
 static int ices_mp4_pull(mp4_in_t *mp4_data);
-static int ices_mp4_readpcm(input_stream_t *self, size_t len, int16_t *left, int16_t *right);
+static ssize_t ices_mp4_readpcm(input_stream_t *self, size_t len, int16_t *left, int16_t *right);
 static int ices_mp4_close(input_stream_t *self);
 
 static void ices_mp4_log_av_error(const char *what, int err) {
@@ -319,7 +319,7 @@ int ices_mp4_open(input_stream_t *self, char *buf, size_t len) {
 	return -1;
 }
 
-static int ices_mp4_readpcm(input_stream_t *self, size_t olen, int16_t *left, int16_t *right) {
+static ssize_t ices_mp4_readpcm(input_stream_t *self, size_t olen, int16_t *left, int16_t *right) {
 	mp4_in_t *mp4_data = (mp4_in_t *)self->data;
 	int max_samples;
 	int available;
